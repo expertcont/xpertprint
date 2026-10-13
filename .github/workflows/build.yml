@@ -35,7 +35,17 @@ jobs:
           mvn -version
 
       - name: Maven verify
-        run: mvn -B -ntp -e verify
+        run: |
+          set -o pipefail
+          mvn -B -ntp -e verify 2>&1 | tee maven-verify.log
+
+      - name: Upload Maven verify log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: expertprint-server-maven-verify-log
+          path: expertprint-server/maven-verify.log
+          if-no-files-found: warn
 
       - name: Upload Quarkus build output
         if: success()
