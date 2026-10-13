@@ -1,0 +1,30 @@
+# Secrets and SSH
+.env
+.env.*
+!.env.example
+*.pem
+*.pfx
+*.p12
+*.key
+id_rsa*
+id_ed25519*
+.ssh/
+**/.ssh/
+# Java
+**/target/
+**/.mvn/wrapper/maven-wrapper.jar
+*.class
+# .NET
+**/bin/
+**/obj/
+.vs/
+# Editors and OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+# Logs and runtime PDFs
+*.log
+logs/
+*.pdf
