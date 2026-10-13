@@ -1,17 +1,29 @@
 package pe.expertcont.print;
 
 import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.*;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.ServerErrorException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import javax.sql.DataSource;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.security.*;
 import java.sql.*;
 import java.util.*;
 import java.util.HexFormat;
 import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
 
 @Path("/api")
 public class PrintResource {
@@ -65,8 +77,8 @@ public class PrintResource {
   String impresora=tipo.equals("BOLETO")?"TERMICA":"A4";
   String ref=clean(referencia,1000);
   // La referencia debe ser JSON valido; PostgreSQL valida el tipo JSONB.
-  Path dir=Path.of(storageDir).toAbsolutePath().normalize();Files.createDirectories(dir);
-  Path file=dir.resolve(UUID.randomUUID()+".pdf");
+  java.nio.file.Path dir=java.nio.file.Path.of(storageDir).toAbsolutePath().normalize();Files.createDirectories(dir);
+  java.nio.file.Path file=dir.resolve(UUID.randomUUID()+".pdf");
   Files.write(file,pdf,StandardOpenOption.CREATE_NEW);
   try(Connection c=ds.getConnection()) {
    // Retornar el trabajo existente sin sobrescribir PDF: idempotencia por empresa.
@@ -111,7 +123,7 @@ public class PrintResource {
    q.setLong(1,jobId);q.setString(2,d.usuario);q.setString(3,d.documento);q.setString(4,d.agencia);q.setObject(5,d.id);
    try(ResultSet r=q.executeQuery()) {
     if(!r.next())throw new NotFoundException();
-    Path root=Path.of(storageDir).toAbsolutePath().normalize();Path f=Path.of(r.getString(1)).toAbsolutePath().normalize();
+    java.nio.file.Path root=java.nio.file.Path.of(storageDir).toAbsolutePath().normalize();java.nio.file.Path f=java.nio.file.Path.of(r.getString(1)).toAbsolutePath().normalize();
     if(!f.startsWith(root))throw new ForbiddenException();
     return Response.ok(Files.readAllBytes(f)).header("Content-Disposition","attachment; filename=expertprint-"+jobId+".pdf").build();
    }
