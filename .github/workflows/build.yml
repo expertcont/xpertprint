@@ -29,8 +29,13 @@ jobs:
           cache: maven
           cache-dependency-path: expertprint-server/pom.xml
 
+      - name: Show tool versions
+        run: |
+          java -version
+          mvn -version
+
       - name: Maven verify
-        run: mvn -B -ntp verify
+        run: mvn -B -ntp -e verify
 
       - name: Upload Quarkus build output
         if: success()
